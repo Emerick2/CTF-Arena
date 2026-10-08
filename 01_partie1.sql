@@ -266,8 +266,29 @@ LIMIT 10;
 
 
 
+-- Mission 1.6 - Réagir à un compte compromis
+ALTER USER 'orga_ctf'@'localhost' ACCOUNT LOCK;
+
+-- 2. Essayez de vous connecter avec : notez le message et le numéro d'erreur.
+-- sudo mysql -u orga_ctf -p
+-- ERROR 1045 (28000): Access denied for user 'orga_ctf'@'localhost' (using password: YES)
+
+ALTER USER 'orga_ctf'@'localhost'
+IDENTIFIED BY 'Orga!Nouveau2026';
+
+ALTER USER 'orga_ctf'@'localhost' ACCOUNT UNLOCK;
+
+ALTER USER 'app_web'@'localhost'
+WITH MAX_USER_CONNECTIONS 20;
+
+ALTER USER 'orga_ctf'@'localhost'
+PASSWORD EXPIRE INTERVAL 90 DAY;
+
+ALTER USER 'auditeur'@'localhost'
+PASSWORD EXPIRE INTERVAL 90 DAY;
 
 
+-- Bonus 1.B — Auditer les droits sans SHOW GRANTS
 
 
 
