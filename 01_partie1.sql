@@ -241,3 +241,26 @@ GRANT SELECT (
     correct,
     date_soumission
 ) ON ctfarena.soumissions TO role_audit;
+
+
+-- Mission 1.6 - Réagir à un compte compromis
+
+ALTER USER 'orga_ctf'@'localhost' ACCOUNT LOCK;
+
+ALTER USER 'orga_ctf'@'localhost'
+IDENTIFIED BY 'Orga!Nouveau2026';
+
+ALTER USER 'orga_ctf'@'localhost' ACCOUNT UNLOCK;
+
+ALTER USER 'app_web'@'localhost'
+WITH MAX_USER_CONNECTIONS 20;
+
+ALTER USER 'orga_ctf'@'localhost'
+PASSWORD EXPIRE INTERVAL 90 DAY;
+
+ALTER USER 'auditeur'@'localhost'
+PASSWORD EXPIRE INTERVAL 90 DAY;
+
+SHOW CREATE USER 'orga_ctf'@'localhost';
+SHOW CREATE USER 'app_web'@'localhost';
+SHOW CREATE USER 'auditeur'@'localhost';
