@@ -24,11 +24,11 @@ DESCRIBE validations;
 -- categories :
 -- publiques : nom
 -- internes : id_categorie
--- sensibles : 
+-- sensibles : aucune
 -- 
 -- challenges :
--- publiques : id_challenge, titre, id_categorie, difficulte, points uniquement lorsque le challenge est ouvert
--- internes : statut, id_auteur
+-- publiques : titre, difficulte, points
+-- internes : statut, id_auteur, id_challenge, id_categorie
 -- sensibles : flag
 --
 -- soumissions :
@@ -37,8 +37,8 @@ DESCRIBE validations;
 -- sensibles : flag_propose, ip_source
 --
 -- validations :
--- publiques : id_equipe, id_challenge, date_validation
--- internes : id_joueur
+-- publiques : date_validation
+-- internes : id_joueur, id_equipe, id_challenge
 -- sensibles : aucune
 
 
@@ -137,7 +137,6 @@ REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'orga_ctf'@'localhost';
 REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'app_web'@'localhost';
 REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'auditeur'@'localhost';
 
--- role_admin, role_orga, role_app, role_audit.
 -- role_admin :
 CREATE ROLE role_admin;
 
