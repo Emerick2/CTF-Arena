@@ -59,4 +59,43 @@ SELECT user, host FROM mysql.user;
 
 
 -- 5. Question (en commentaire) : pourquoi ne faut-il pas créer app_web avec @'%' ?
+-- Il ne faut pas créer un app_web avec @’%’ Sinon cela va permettre à app_web d’accéder à tous les espaces de la base de données, ce qui n’est pas ce qui est voulu.
+
+
+
+-- Mission 1.2 — Appliquer la matrice de droits
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
