@@ -11,6 +11,36 @@ DESCRIBE joueurs;
 DESCRIBE soumissions;
 DESCRIBE validations;
 
+-- equipes :
+-- publiques : nom, ecole
+-- internes : id_equipe
+-- sensibles : bannie, date_inscription
+--
+-- joueurs :
+-- publiques : pseudo, role_plateforme
+-- internes : id_joueurs, id_equipe
+-- sensibles : email, mot_de_passe_hash, derniere_ip
+--
+-- categories :
+-- publiques : nom
+-- internes : id_categorie
+-- sensibles : 
+-- 
+-- challenges :
+-- publiques : id_challenge, titre, id_categorie, difficulte, points uniquement lorsque le challenge est ouvert
+-- internes : statut, id_auteur
+-- sensibles : flag
+--
+-- soumissions :
+-- publiques : aucune
+-- internes : id_soumission, id_joueur, id_challenge, correct, date_soumission
+-- sensibles : flag_propose, ip_source
+--
+-- validations :
+-- publiques : id_equipe, id_challenge, date_validation
+-- internes : id_joueur
+-- sensibles : aucune
+
 
 -- Mission 1.1 — Créer les comptes
 DROP USER IF EXISTS 'admin_ctf'@'localhost';
@@ -30,5 +60,3 @@ SELECT user, host FROM mysql.user;
 
 -- 5. Question (en commentaire) : pourquoi ne faut-il pas créer app_web avec @'%' ?
 
--- DROP USER IF EXISTS 'app_web'@'localhost';
--- CREATE USER 'app_web'@'localhost' IDENTIFIED BY 'MotDeP@sse1';
