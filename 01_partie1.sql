@@ -227,3 +227,50 @@ SET DEFAULT ROLE ALL TO 'auditeur'@'localhost';
 
 
 FLUSH PRIVILEGES;
+
+
+-- Mission 1.5 — Appliquer une décision RGPD
+
+REVOKE SELECT
+    ON ctfarena.soumissions
+    FROM role_audit;
+
+
+GRANT SELECT(id_soumission, id_joueur, id_challenge, correct, date_soumission)
+    ON ctfarena.soumissions
+    TO role_audit;
+
+FLUSH PRIVILEGES;
+
+-- 2. Prouvez-le par deux tests sous auditeur : une requête refusée, une requête acceptée.
+
+-- requête refusée 1 :
+SELECT flag_propose
+FROM soumissions
+LIMIT 10;
+
+-- requête refusée 2 :
+SELECT ip_source
+FROM soumissions
+LIMIT 10;
+
+-- requête acceptée 1 :
+SELECT date_soumission
+FROM soumissions
+LIMIT 10;
+
+-- requête acceptée 2 :
+SELECT id_joueur
+FROM soumissions
+LIMIT 10;
+
+
+
+
+
+
+
+
+
+
+
