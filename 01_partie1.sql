@@ -12,8 +12,7 @@ DESCRIBE soumissions;
 DESCRIBE validations;
 
 -- challenges :
--- publiques : id_challenge, titre, id_categorie, difficulte, points
---             uniquement lorsque le challenge est ouvert
+-- publiques : id_challenge, titre, id_categorie, difficulte, points uniquement lorsque le challenge est ouvert
 -- internes : statut, id_auteur
 -- sensibles : flag
 --
