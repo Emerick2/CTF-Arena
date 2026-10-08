@@ -24,11 +24,11 @@ DESCRIBE validations;
 -- categories :
 -- publiques : nom
 -- internes : id_categorie
--- sensibles :
---
+-- sensibles : aucune
+-- 
 -- challenges :
--- publiques : id_challenge, titre, id_categorie, difficulte, points uniquement lorsque le challenge est ouvert
--- internes : statut, id_auteur
+-- publiques : titre, difficulte, points
+-- internes : statut, id_auteur, id_challenge, id_categorie
 -- sensibles : flag
 --
 -- soumissions :
@@ -37,10 +37,9 @@ DESCRIBE validations;
 -- sensibles : flag_propose, ip_source
 --
 -- validations :
--- publiques : id_equipe, id_challenge, date_validation
--- internes : id_joueur
+-- publiques : date_validation
+-- internes : id_joueur, id_equipe, id_challenge
 -- sensibles : aucune
-
 
 -- Mission 1.1 — Créer les comptes
 DROP USER IF EXISTS 'admin_ctf'@'localhost';
@@ -59,18 +58,8 @@ SELECT user, host FROM mysql.user;
 
 
 -- 5. Question (en commentaire) : pourquoi ne faut-il pas créer app_web avec @'%' ?
--- Il ne faut pas créer un app_web avec @’%’ Sinon cela va permettre à app_web d’accéder à tous les espaces de la base de données, ce qui n’est pas ce qui est voulu.
-
--- +--------------------+
--- | Tables_in_ctfarena |
--- +--------------------+
--- | categories         |
--- | challenges         |
--- | equipes            |
--- | joueurs            |
--- | soumissions        |
--- | validations        |
--- +--------------------+
+-- localhost limite l'origine des connexions au serveur local.
+-- '%' permettrait des connexions depuis tous les hôtes autorisés par le réseau, ce qui augmente l'exposition du compte applicatif.
 
 -- Mission 1.2 — Appliquer la matrice de droits
 
@@ -228,24 +217,48 @@ SET DEFAULT ROLE ALL TO 'auditeur'@'localhost';
 
 FLUSH PRIVILEGES;
 
--- Mission 1.5 - Appliquer la décision RGPD
 
--- Retirer le droit sur toute la table avant de limiter les colonnes.
+-- Mission 1.5 — Appliquer une décision RGPD
 
-REVOKE SELECT ON ctfarena.soumissions FROM role_audit;
+REVOKE SELECT
+    ON ctfarena.soumissions
+    FROM role_audit;
 
-GRANT SELECT (
-    id_soumission,
-    id_joueur,
-    id_challenge,
-    correct,
-    date_soumission
-) ON ctfarena.soumissions TO role_audit;
 
+GRANT SELECT(id_soumission, id_joueur, id_challenge, correct, date_soumission)
+    ON ctfarena.soumissions
+    TO role_audit;
+
+FLUSH PRIVILEGES;
+
+-- 2. Prouvez-le par deux tests sous auditeur : une requête refusée, une requête acceptée.
+
+-- requête refusée 1 :
+SELECT flag_propose
+FROM soumissions
+LIMIT 10;
+
+-- requête refusée 2 :
+SELECT ip_source
+FROM soumissions
+LIMIT 10;
+
+-- requête acceptée 1 :
+SELECT date_soumission
+FROM soumissions
+LIMIT 10;
+
+-- requête acceptée 2 :
+SELECT id_joueur
+FROM soumissions
+LIMIT 10;
 
 -- Mission 1.6 - Réagir à un compte compromis
-
 ALTER USER 'orga_ctf'@'localhost' ACCOUNT LOCK;
+
+-- 2. Essayez de vous connecter avec : notez le message et le numéro d'erreur.
+-- sudo mysql -u orga_ctf -p
+-- ERROR 1045 (28000): Access denied for user 'orga_ctf'@'localhost' (using password: YES)
 
 ALTER USER 'orga_ctf'@'localhost'
 IDENTIFIED BY 'Orga!Nouveau2026';
@@ -265,7 +278,9 @@ SHOW CREATE USER 'orga_ctf'@'localhost';
 SHOW CREATE USER 'app_web'@'localhost';
 SHOW CREATE USER 'auditeur'@'localhost';
 
--- Bonus 1.B - Auditer les droits avec le dictionnaire
+-- Bonus 1.B — Auditer les droits sans SHOW GRANTS
+-- Pourquoi les rôles sont-ils préférables aux droits donnés compte par compte ?
+-- Les rôles sont préférables aux droits donnés compte par compte parce qu’il est bien plus simple de gérer les permissions de seulement 4 rôles plutôt que de gérer des centaines d’utilisateurs. Cela permet de corriger plus facilement un problème de permission si on en trouve un, cela permet également de vérifier les permissions d’une catégorie d’utilisateurs rapidement. Enfin, cela a également l’avantage de mettre tous les utilisateurs à égalité face à leurs droits dans l’édition de la base de données.
 
 SELECT GRANTEE, TABLE_NAME, PRIVILEGE_TYPE
 FROM information_schema.TABLE_PRIVILEGES
@@ -292,3 +307,4 @@ FROM mysql.roles_mapping */;
 -- pourtant classé sensible. On ne peut donc pas prouver que seul
 -- role_admin accède aux colonnes sensibles.
 -- On conserve la matrice obligatoire et documente cette exception.
+
