@@ -59,18 +59,8 @@ SELECT user, host FROM mysql.user;
 
 
 -- 5. Question (en commentaire) : pourquoi ne faut-il pas créer app_web avec @'%' ?
--- Il ne faut pas créer un app_web avec @’%’ Sinon cela va permettre à app_web d’accéder à tous les espaces de la base de données, ce qui n’est pas ce qui est voulu.
-
--- +--------------------+
--- | Tables_in_ctfarena |
--- +--------------------+
--- | categories         |
--- | challenges         |
--- | equipes            |
--- | joueurs            |
--- | soumissions        |
--- | validations        |
--- +--------------------+
+-- localhost limite l'origine des connexions au serveur local.
+-- '%' permettrait des connexions depuis tous les hôtes autorisés par le réseau, ce qui augmente l'exposition du compte applicatif.
 
 -- Mission 1.2 — Appliquer la matrice de droits
 
@@ -289,9 +279,11 @@ PASSWORD EXPIRE INTERVAL 90 DAY;
 
 
 -- Bonus 1.B — Auditer les droits sans SHOW GRANTS
+-- Pourquoi les rôles sont-ils préférables aux droits donnés compte par compte ?
+-- Les rôles sont préférables aux droits donnés compte par compte parce qu’il est bien plus simple de gérer les permissions de seulement 4 rôles plutôt que de gérer des centaines d’utilisateurs. Cela permet de corriger plus facilement un problème de permission si on en trouve un, cela permet également de vérifier les permissions d’une catégorie d’utilisateurs rapidement. Enfin, cela a également l’avantage de mettre tous les utilisateurs à égalité face à leurs droits dans l’édition de la base de données.
 
 
 
-
+SHOW GRANT information_schema.TABLE_PRIVILEGES;
 
 
