@@ -57,3 +57,58 @@ WHERE user IN ('admin_ctf', 'orga_ctf', 'app_web', 'auditeur');
 -- '%' permettrait des connexions depuis tous les hôtes autorisés
 -- par le réseau, ce qui augmente l'exposition du compte applicatif.
 
+-- Mission 1.2 - Accorder les droits directement aux comptes
+
+GRANT ALL PRIVILEGES ON ctfarena.*
+TO 'admin_ctf'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE ON ctfarena.challenges
+TO 'orga_ctf'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE ON ctfarena.categories
+TO 'orga_ctf'@'localhost';
+
+GRANT SELECT ON ctfarena.equipes
+TO 'orga_ctf'@'localhost';
+
+GRANT SELECT ON ctfarena.equipes
+TO 'app_web'@'localhost';
+
+GRANT SELECT ON ctfarena.categories
+TO 'app_web'@'localhost';
+
+GRANT SELECT ON ctfarena.validations
+TO 'app_web'@'localhost';
+
+GRANT INSERT ON ctfarena.soumissions
+TO 'app_web'@'localhost';
+
+GRANT SELECT (
+    id_joueur,
+    pseudo,
+    id_equipe,
+    role_plateforme
+) ON ctfarena.joueurs
+TO 'app_web'@'localhost';
+
+GRANT SELECT (
+    id_challenge,
+    titre,
+    id_categorie,
+    difficulte,
+    points,
+    statut,
+    id_auteur
+) ON ctfarena.challenges
+TO 'app_web'@'localhost';
+
+GRANT SELECT ON ctfarena.soumissions
+TO 'auditeur'@'localhost';
+
+GRANT SELECT ON ctfarena.validations
+TO 'auditeur'@'localhost';
+
+SHOW GRANTS FOR 'admin_ctf'@'localhost';
+SHOW GRANTS FOR 'orga_ctf'@'localhost';
+SHOW GRANTS FOR 'app_web'@'localhost';
+SHOW GRANTS FOR 'auditeur'@'localhost';
