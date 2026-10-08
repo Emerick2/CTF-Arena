@@ -227,3 +227,17 @@ SET DEFAULT ROLE ALL TO 'auditeur'@'localhost';
 
 
 FLUSH PRIVILEGES;
+
+-- Mission 1.5 - Appliquer la décision RGPD
+
+-- Retirer le droit sur toute la table avant de limiter les colonnes.
+
+REVOKE SELECT ON ctfarena.soumissions FROM role_audit;
+
+GRANT SELECT (
+    id_soumission,
+    id_joueur,
+    id_challenge,
+    correct,
+    date_soumission
+) ON ctfarena.soumissions TO role_audit;
