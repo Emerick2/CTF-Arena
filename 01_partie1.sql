@@ -24,11 +24,11 @@ DESCRIBE validations;
 -- categories :
 -- publiques : nom
 -- internes : id_categorie
--- sensibles : 
+-- sensibles : aucune
 -- 
 -- challenges :
--- publiques : id_challenge, titre, id_categorie, difficulte, points uniquement lorsque le challenge est ouvert
--- internes : statut, id_auteur
+-- publiques : titre, difficulte, points
+-- internes : statut, id_auteur, id_challenge, id_categorie
 -- sensibles : flag
 --
 -- soumissions :
@@ -37,10 +37,9 @@ DESCRIBE validations;
 -- sensibles : flag_propose, ip_source
 --
 -- validations :
--- publiques : id_equipe, id_challenge, date_validation
--- internes : id_joueur
+-- publiques : date_validation
+-- internes : id_joueur, id_equipe, id_challenge
 -- sensibles : aucune
-
 
 -- Mission 1.1 — Créer les comptes
 DROP USER IF EXISTS 'admin_ctf'@'localhost';
@@ -254,8 +253,6 @@ SELECT id_joueur
 FROM soumissions
 LIMIT 10;
 
-
-
 -- Mission 1.6 - Réagir à un compte compromis
 ALTER USER 'orga_ctf'@'localhost' ACCOUNT LOCK;
 
@@ -277,11 +274,13 @@ PASSWORD EXPIRE INTERVAL 90 DAY;
 ALTER USER 'auditeur'@'localhost'
 PASSWORD EXPIRE INTERVAL 90 DAY;
 
+SHOW CREATE USER 'orga_ctf'@'localhost';
+SHOW CREATE USER 'app_web'@'localhost';
+SHOW CREATE USER 'auditeur'@'localhost';
 
 -- Bonus 1.B — Auditer les droits sans SHOW GRANTS
 -- Pourquoi les rôles sont-ils préférables aux droits donnés compte par compte ?
 -- Les rôles sont préférables aux droits donnés compte par compte parce qu’il est bien plus simple de gérer les permissions de seulement 4 rôles plutôt que de gérer des centaines d’utilisateurs. Cela permet de corriger plus facilement un problème de permission si on en trouve un, cela permet également de vérifier les permissions d’une catégorie d’utilisateurs rapidement. Enfin, cela a également l’avantage de mettre tous les utilisateurs à égalité face à leurs droits dans l’édition de la base de données.
-
 
 SELECT GRANTEE, TABLE_NAME, PRIVILEGE_TYPE
 FROM information_schema.TABLE_PRIVILEGES
