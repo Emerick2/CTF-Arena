@@ -75,7 +75,7 @@ SELECT user, host FROM mysql.user;
 -- Mission 1.2 — Appliquer la matrice de droits
 
 -- admin_ctf :
-GRANT SELECT, INSERT, UPDATE, DELETE
+GRANT ALL PRIVILEGES
     ON ctfarena.*
     TO 'admin_ctf'@'localhost';
 
@@ -128,9 +128,16 @@ GRANT SELECT
     ON ctfarena.validations
     TO 'auditeur'@'localhost';
 
+FLUSH PRIVILEGES;
 
 
+SHOW GRANTS FOR 'admin_ctf'@'localhost';
+SHOW GRANTS FOR 'orga_ctf'@'localhost';
+SHOW GRANTS FOR 'app_web'@'localhost';
+SHOW GRANTS FOR 'auditeur'@'localhost';
 
+
+-- Mission 1.3 — Tester le cloisonnement
 
 
 
