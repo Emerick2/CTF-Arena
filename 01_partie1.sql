@@ -61,20 +61,72 @@ SELECT user, host FROM mysql.user;
 -- 5. Question (en commentaire) : pourquoi ne faut-il pas créer app_web avec @'%' ?
 -- Il ne faut pas créer un app_web avec @’%’ Sinon cela va permettre à app_web d’accéder à tous les espaces de la base de données, ce qui n’est pas ce qui est voulu.
 
-
+-- +--------------------+
+-- | Tables_in_ctfarena |
+-- +--------------------+
+-- | categories         |
+-- | challenges         |
+-- | equipes            |
+-- | joueurs            |
+-- | soumissions        |
+-- | validations        |
+-- +--------------------+
 
 -- Mission 1.2 — Appliquer la matrice de droits
 
+-- admin_ctf :
+GRANT SELECT, INSERT, UPDATE, DELETE
+    ON ctfarena.*
+    TO 'admin_ctf'@'localhost';
+
+-- orga_ctf :
+GRANT SELECT, INSERT, UPDATE
+    ON ctfarena.challenges
+    TO 'orga_ctf'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE
+    ON ctfarena.categories
+    TO 'orga_ctf'@'localhost';
+
+GRANT SELECT
+    ON ctfarena.equipes
+    TO 'orga_ctf'@'localhost';
+
+-- app_web
+GRANT SELECT
+    ON ctfarena.equipes
+    TO 'app_web'@'localhost';
+
+GRANT SELECT
+    ON ctfarena.categories
+    TO 'app_web'@'localhost';
+
+GRANT SELECT
+    ON ctfarena.validations
+    TO 'app_web'@'localhost';
+
+GRANT INSERT
+    ON ctfarena.soumissions
+    TO 'app_web'@'localhost';
+
+GRANT SELECT(id_joueur, pseudo, id_equipe, role_plateforme)
+    ON ctfarena.joueurs
+    TO 'app_web'@'localhost';
 
 
+GRANT SELECT(id_challenge, titre, id_categorie, difficulte, points, statut, id_auteur)
+    ON ctfarena.challenges
+    TO 'app_web'@'localhost';
 
 
+-- auditeur
+GRANT SELECT
+    ON ctfarena.soumissions
+    TO 'auditeur'@'localhost';
 
-
-
-
-
-
+GRANT SELECT
+    ON ctfarena.validations
+    TO 'auditeur'@'localhost';
 
 
 
