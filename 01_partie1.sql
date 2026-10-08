@@ -138,98 +138,92 @@ SHOW GRANTS FOR 'auditeur'@'localhost';
 
 
 -- Mission 1.3 — Tester le cloisonnement
--- Mission 1.4 - Passer aux rôles
+-- La réponse est dans le README.
 
--- Supprimer les privilèges directs avant d'attribuer les rôles.
 
-REVOKE ALL PRIVILEGES, GRANT OPTION
-FROM 'admin_ctf'@'localhost';
+-- Mission 1.4 — Passer aux rôles
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'admin_ctf'@'localhost';
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'orga_ctf'@'localhost';
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'app_web'@'localhost';
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'auditeur'@'localhost';
 
-REVOKE ALL PRIVILEGES, GRANT OPTION
-FROM 'orga_ctf'@'localhost';
+-- role_admin, role_orga, role_app, role_audit.
+-- role_admin :
+CREATE ROLE role_admin;
 
-REVOKE ALL PRIVILEGES, GRANT OPTION
-FROM 'app_web'@'localhost';
+GRANT ALL PRIVILEGES
+    ON ctfarena.*
+    TO role_admin;
 
-REVOKE ALL PRIVILEGES, GRANT OPTION
-FROM 'auditeur'@'localhost';
-
-CREATE ROLE role_admin, role_orga, role_app, role_audit;
-
-GRANT ALL PRIVILEGES ON ctfarena.* TO role_admin;
-
-GRANT SELECT, INSERT, UPDATE
-ON ctfarena.challenges TO role_orga;
-
-GRANT SELECT, INSERT, UPDATE
-ON ctfarena.categories TO role_orga;
-
-GRANT SELECT ON ctfarena.equipes TO role_orga;
-
-GRANT SELECT ON ctfarena.equipes TO role_app;
-GRANT SELECT ON ctfarena.categories TO role_app;
-GRANT SELECT ON ctfarena.validations TO role_app;
-GRANT INSERT ON ctfarena.soumissions TO role_app;
-
-GRANT SELECT (
-    id_joueur,
-    pseudo,
-    id_equipe,
-    role_plateforme
-) ON ctfarena.joueurs TO role_app;
-
-GRANT SELECT (
-    id_challenge,
-    titre,
-    id_categorie,
-    difficulte,
-    points,
-    statut,
-    id_auteur
-) ON ctfarena.challenges TO role_app;
-
-GRANT SELECT ON ctfarena.soumissions TO role_audit;
-GRANT SELECT ON ctfarena.validations TO role_audit;
 
 GRANT role_admin TO 'admin_ctf'@'localhost';
+SET DEFAULT ROLE ALL TO 'admin_ctf'@'localhost';
+
+-- role_orga
+CREATE ROLE role_orga;
+
+GRANT SELECT, INSERT, UPDATE
+    ON ctfarena.challenges
+    TO role_orga;
+
+GRANT SELECT, INSERT, UPDATE
+    ON ctfarena.categories
+    TO role_orga;
+
+GRANT SELECT
+    ON ctfarena.equipes
+    TO role_orga;
+
+
 GRANT role_orga TO 'orga_ctf'@'localhost';
+SET DEFAULT ROLE ALL TO 'orga_ctf'@'localhost';
+
+-- role_app
+CREATE ROLE role_app;
+
+GRANT SELECT
+    ON ctfarena.equipes
+    TO role_app;
+
+GRANT SELECT
+    ON ctfarena.categories
+    TO role_app;
+
+GRANT SELECT
+    ON ctfarena.validations
+    TO role_app;
+
+GRANT INSERT
+    ON ctfarena.soumissions
+    TO role_app;
+
+GRANT SELECT(id_joueur, pseudo, id_equipe, role_plateforme)
+    ON ctfarena.joueurs
+    TO role_app;
+
+
+GRANT SELECT(id_challenge, titre, id_categorie, difficulte, points, statut, id_auteur)
+    ON ctfarena.challenges
+    TO role_app;
+
+
 GRANT role_app TO 'app_web'@'localhost';
+SET DEFAULT ROLE ALL TO 'app_web'@'localhost';
+
+
+-- role_audit :
+CREATE ROLE role_audit;
+
+GRANT SELECT
+    ON ctfarena.soumissions
+    TO role_audit;
+
+GRANT SELECT
+    ON ctfarena.validations
+    TO role_audit;
+
 GRANT role_audit TO 'auditeur'@'localhost';
+SET DEFAULT ROLE ALL TO 'auditeur'@'localhost';
 
--- Commentaires exécutables : le serveur choisit sa syntaxe.
--- /*!80000 ... */ : MySQL.
--- /*M!100600 ... */ : MariaDB.
 
-/*!80000 SET DEFAULT ROLE ALL TO 'admin_ctf'@'localhost' */;
-/*!80000 SET DEFAULT ROLE ALL TO 'orga_ctf'@'localhost' */;
-/*!80000 SET DEFAULT ROLE ALL TO 'app_web'@'localhost' */;
-/*!80000 SET DEFAULT ROLE ALL TO 'auditeur'@'localhost' */;
-
-/*M!100600 SET DEFAULT ROLE role_admin FOR 'admin_ctf'@'localhost' */;
-/*M!100600 SET DEFAULT ROLE role_orga FOR 'orga_ctf'@'localhost' */;
-/*M!100600 SET DEFAULT ROLE role_app FOR 'app_web'@'localhost' */;
-/*M!100600 SET DEFAULT ROLE role_audit FOR 'auditeur'@'localhost' */;
-
-SHOW GRANTS FOR 'app_web'@'localhost';
-
-/*
--- TEST MANUEL : fermer et rouvrir les connexions de test.
--- Refaire les cinq tests de la mission 1.3.
--- Attendu : mêmes résultats.
-
--- Compte app_web
--- Attendu : role_app actif.
-SELECT CURRENT_ROLE();
--- Résultat réel : à compléter.
-*/
-
--- Pourquoi utiliser des rôles ?
--- Les rôles centralisent les droits d'un profil.
--- Un nouvel utilisateur reçoit simplement le rôle adapté.
--- Une modification du rôle s'applique à ses utilisateurs.
--- Les rôles facilitent l'audit et la révocation des accès.
--- Retirer les droits directs évite les autorisations résiduelles.
-
--- Paradoxe : app_web peut insérer une soumission,
--- mais ne peut pas lire le flag pour vérifier la réponse.
--- La procédure DEFINER de la partie 3 résoudra ce problème.
+FLUSH PRIVILEGES;
