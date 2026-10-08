@@ -138,23 +138,92 @@ SHOW GRANTS FOR 'auditeur'@'localhost';
 
 
 -- Mission 1.3 — Tester le cloisonnement
+-- La réponse est dans le README.
 
 
+-- Mission 1.4 — Passer aux rôles
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'admin_ctf'@'localhost';
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'orga_ctf'@'localhost';
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'app_web'@'localhost';
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'auditeur'@'localhost';
+
+-- role_admin, role_orga, role_app, role_audit.
+-- role_admin :
+CREATE ROLE role_admin;
+
+GRANT ALL PRIVILEGES
+    ON ctfarena.*
+    TO role_admin;
 
 
+GRANT role_admin TO 'admin_ctf'@'localhost';
+SET DEFAULT ROLE ALL TO 'admin_ctf'@'localhost';
+
+-- role_orga
+CREATE ROLE role_orga;
+
+GRANT SELECT, INSERT, UPDATE
+    ON ctfarena.challenges
+    TO role_orga;
+
+GRANT SELECT, INSERT, UPDATE
+    ON ctfarena.categories
+    TO role_orga;
+
+GRANT SELECT
+    ON ctfarena.equipes
+    TO role_orga;
 
 
+GRANT role_orga TO 'orga_ctf'@'localhost';
+SET DEFAULT ROLE ALL TO 'orga_ctf'@'localhost';
+
+-- role_app
+CREATE ROLE role_app;
+
+GRANT SELECT
+    ON ctfarena.equipes
+    TO role_app;
+
+GRANT SELECT
+    ON ctfarena.categories
+    TO role_app;
+
+GRANT SELECT
+    ON ctfarena.validations
+    TO role_app;
+
+GRANT INSERT
+    ON ctfarena.soumissions
+    TO role_app;
+
+GRANT SELECT(id_joueur, pseudo, id_equipe, role_plateforme)
+    ON ctfarena.joueurs
+    TO role_app;
 
 
+GRANT SELECT(id_challenge, titre, id_categorie, difficulte, points, statut, id_auteur)
+    ON ctfarena.challenges
+    TO role_app;
 
 
+GRANT role_app TO 'app_web'@'localhost';
+SET DEFAULT ROLE ALL TO 'app_web'@'localhost';
 
 
+-- role_audit :
+CREATE ROLE role_audit;
+
+GRANT SELECT
+    ON ctfarena.soumissions
+    TO role_audit;
+
+GRANT SELECT
+    ON ctfarena.validations
+    TO role_audit;
+
+GRANT role_audit TO 'auditeur'@'localhost';
+SET DEFAULT ROLE ALL TO 'auditeur'@'localhost';
 
 
-
-
-
-
-
-
+FLUSH PRIVILEGES;
