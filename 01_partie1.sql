@@ -264,3 +264,31 @@ PASSWORD EXPIRE INTERVAL 90 DAY;
 SHOW CREATE USER 'orga_ctf'@'localhost';
 SHOW CREATE USER 'app_web'@'localhost';
 SHOW CREATE USER 'auditeur'@'localhost';
+
+-- Bonus 1.B - Auditer les droits avec le dictionnaire
+
+SELECT GRANTEE, TABLE_NAME, PRIVILEGE_TYPE
+FROM information_schema.TABLE_PRIVILEGES
+WHERE TABLE_SCHEMA = 'ctfarena'
+ORDER BY GRANTEE, TABLE_NAME, PRIVILEGE_TYPE;
+
+SELECT GRANTEE, TABLE_NAME, COLUMN_NAME, PRIVILEGE_TYPE
+FROM information_schema.COLUMN_PRIVILEGES
+WHERE TABLE_SCHEMA = 'ctfarena'
+ORDER BY GRANTEE, TABLE_NAME, COLUMN_NAME;
+
+SELECT GRANTEE, PRIVILEGE_TYPE
+FROM information_schema.SCHEMA_PRIVILEGES
+WHERE TABLE_SCHEMA = 'ctfarena';
+
+/*!80000 SELECT FROM_USER, FROM_HOST, TO_USER, TO_HOST
+FROM mysql.role_edges */;
+
+/*M!100600 SELECT Host, User, Role
+FROM mysql.roles_mapping */;
+
+-- Incohérence du bonus :
+-- la matrice obligatoire autorise role_orga à lire challenges.flag,
+-- pourtant classé sensible. On ne peut donc pas prouver que seul
+-- role_admin accède aux colonnes sensibles.
+-- On conserve la matrice obligatoire et documente cette exception.
